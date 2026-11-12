@@ -8,15 +8,19 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { ActualizarLibroDto } from './dto/actualizar-libro.dto';
 import { CrearLibroDto } from './dto/crear-libro.dto';
 import { LibrosService } from './libros.service';
+import { BibliotecarioGuard } from '@/auth/guards/bibliotecario.guard';
 
 @Controller('libros')
 export class LibrosController {
   constructor(private readonly service: LibrosService) {}
 
+
+  @UseGuards(BibliotecarioGuard)
   @Post()
   create(@Body() dto: CrearLibroDto) {
     return this.service.create(dto);
@@ -32,6 +36,8 @@ export class LibrosController {
     return this.service.findOne(id);
   }
 
+
+  @UseGuards(BibliotecarioGuard)
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -40,6 +46,8 @@ export class LibrosController {
     return this.service.update(id, dto);
   }
 
+
+  @UseGuards(BibliotecarioGuard)
   @Delete(':id')
   @HttpCode(204)
   remove(@Param('id', ParseIntPipe) id: number) {

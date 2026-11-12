@@ -4,11 +4,13 @@ import { AuthService } from "./auth.service";
 import { JwtModule } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { SociosModule } from "@/socios/socios.module";
+import { AuthGuard } from "./guards/auth.guard";
 
 @Module({
     imports: [
         SociosModule,
         JwtModule.registerAsync({
+            global: true,
             inject: [ConfigService],
             useFactory: (config: ConfigService) => ({
                 secret: config.get<string>('JWT_SECRET'),
@@ -20,6 +22,7 @@ import { SociosModule } from "@/socios/socios.module";
         }),
     ],
     controllers: [AuthController],
-    providers: [AuthService],
+    providers: [AuthService, AuthGuard],
+    exports: [AuthGuard]
 })
 export class AuthModule{}

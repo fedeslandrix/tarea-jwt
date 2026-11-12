@@ -28,7 +28,8 @@ export class AuthService{
         const newUserDto: CrearSocioDto = {
             nombre: registerDto.name,
             email: registerDto.email,
-            pass_hash: hashed_pass
+            pass_hash: hashed_pass,
+            role: registerDto.role
         }
 
         const newUser = this.usersService.create(newUserDto)
@@ -42,40 +43,38 @@ export class AuthService{
         const payload = {
             sub: newUser.id,
             email: newUser.email,
-            rol: "socio"
+            rol: newUser.role
         }
 
-        const token = await this.jwtService.signAsync(payload, {
-            issuer: this.configService.get<string>('JWT_ISSUER', 'mi-app'),
-            expiresIn: this.configService.get<string>('JWT_EXPIRES_IN', '1h') as any,
-        });
+        const token = await this.jwtService.signAsync(payload);
 
-        return {'access_token': token}
+        const {pass_hash, ...user} = newUser
+
+        return {access_token: token, user: user}
 
     }
 
     async login(loginDto: LoginUserDTO){
-        const user = this.usersService.findByEmail(loginDto.email);
+        const userDb = this.usersService.findByEmail(loginDto.email);
 
-        if(!user) throw new NotFoundException(`El socio no existe`);
-        const esValida = await bcrypt.compare(loginDto.password, user.pass_hash)
+        if(!userDb) throw new NotFoundException(`El socio no existe`);
+        const esValida = await bcrypt.compare(loginDto.password, userDb.pass_hash)
 
         if (!esValida) {
             throw new UnauthorizedException('Credenciales inválidas');
         }
         
         const payload = {
-            sub: user.id,
-            email: user.email,
+            sub: userDb.id,
+            email: userDb.email,
             rol: "socio"
         }
         
-        const token = await this.jwtService.signAsync(payload, {
-            issuer: this.configService.get<string>('JWT_ISSUER', 'mi-app'),
-            expiresIn: this.configService.get<string>('JWT_EXPIRES_IN', '1h') as any,
-        });
+        const token = await this.jwtService.signAsync(payload);
 
-        return {'access_token': token}
+        const {pass_hash, ...user} = userDb
+
+        return {access_token: token, user: user}
 
 
     }

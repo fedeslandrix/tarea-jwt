@@ -5,6 +5,9 @@ import { SaludController } from './salud/salud.controller';
 import { SociosModule } from './socios/socios.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './auth/guards/auth.guard';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -15,6 +18,12 @@ import { ConfigModule } from '@nestjs/config';
     SociosModule, 
     PrestamosModule, 
     AuthModule],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard
+    }
+  ],
   controllers: [SaludController],
 })
 export class AppModule {}

@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { CrearPrestamoDto } from './dto/crear-prestamo.dto';
 import { PrestamosService } from './prestamos.service';
+import { CurrentUser } from '@/auth/decorators/current-user.decorator';
 
 @Controller('prestamos')
 export class PrestamosController {
@@ -20,8 +21,8 @@ export class PrestamosController {
   }
 
   @Get()
-  listar() {
-    return this.service.listar();
+  listar(@CurrentUser('id') userId: number) {
+    return this.service.listar(userId);
   }
 
   @Get('vencidos')
@@ -30,13 +31,13 @@ export class PrestamosController {
   }
 
   @Get(':id')
-  obtener(@Param('id', ParseIntPipe) id: number) {
-    return this.service.obtener(id);
+  obtener(@CurrentUser('id') userId: number, @Param('id', ParseIntPipe) id: number) {
+    return this.service.obtener(userId, id);
   }
 
   @Post(':id/devolucion')
   @HttpCode(200)
-  devolver(@Param('id', ParseIntPipe) id: number) {
-    return this.service.devolver(id);
+  devolver(@CurrentUser('id') userId: number, @Param('id', ParseIntPipe) id: number) {
+    return this.service.devolver(userId, id);
   }
 }

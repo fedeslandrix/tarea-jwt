@@ -21,5 +21,8 @@
       }
     ]
   },
-  "setupFiles": ["<rootDir>/jest-globals.ts", "<rootDir>/setup-env.ts"]
+  "setupFiles": ["<rootDir>/jest-globals.ts", "<rootDir>/setup-env.ts"],
+  "moduleNameMapper": {
+    "^@/(.*)$": "<rootDir>/../src/$1"
+  }
 }

@@ -10,5 +10,6 @@ export class RegisterUserDTO{
     @IsString()
     password: string;
 
-
+    @IsString()
+    role: string;
 }

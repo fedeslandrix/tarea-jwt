@@ -10,4 +10,7 @@ export class CrearSocioDto {
 
   @IsString()
   pass_hash: string;
+
+  @IsString()
+  role: string;
 }

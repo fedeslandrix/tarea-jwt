@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -49,8 +50,8 @@ export class PrestamosService {
     });
   }
 
-  devolver(id: number): Prestamo {
-    const prestamo = this.obtener(id);
+  devolver(userId: number, id: number): Prestamo {
+    const prestamo = this.obtener(userId, id);
     if (prestamo.devueltoEn !== null) {
       throw new ConflictException('El préstamo ya fue devuelto');
     }
@@ -65,13 +66,14 @@ export class PrestamosService {
     return this.repo.save(prestamo);
   }
 
-  obtener(id: number): Prestamo {
+  obtener(userId: number, id: number): Prestamo {
     const prestamo = this.repo.findById(id);
     if (!prestamo) throw new NotFoundException(`El préstamo ${id} no existe`);
+    if (userId!=prestamo.socioId) throw new NotFoundException(`El préstamo ${id} no existe`);
     return prestamo;
   }
 
-  listar(): Prestamo[] {
+  listar(userId: number): Prestamo[] {
     return this.repo.findAll();
   }
 
